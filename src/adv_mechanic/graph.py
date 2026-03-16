@@ -28,6 +28,17 @@ def _should_resolve_conflicts(state: GraphState) -> str:
     return "generate"
 
 
+# Human-readable labels for each node, used by the CLI progress display
+NODE_LABELS = {
+    "router": "Classifying query",
+    "retrieve": "Searching manuals",
+    "grade": "Grading relevance",
+    "web_search": "Searching web",
+    "resolve_conflicts": "Checking conflicts",
+    "generate": "Generating answer",
+}
+
+
 def build_graph():
     """Build and compile the agentic RAG graph.
 

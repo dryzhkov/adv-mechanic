@@ -1,15 +1,72 @@
 """CLI entry point for adv-mechanic."""
 
+import sys
+import time
 from pathlib import Path
 
 import typer
 
 from adv_mechanic.config import MANUALS_DIR
-from adv_mechanic.graph import build_graph
+from adv_mechanic.graph import NODE_LABELS, build_graph
 from adv_mechanic.ingestion.pipeline import ingest_all_manuals, ingest_manual
 from adv_mechanic.search import list_ingested_manuals
 
 app = typer.Typer(help="ADV Mechanic - Agentic RAG for motorcycle service manuals")
+
+
+def _node_summary(node_name: str, state_update: dict) -> str:
+    """Return a short summary of what a node produced."""
+    if node_name == "router":
+        qt = state_update.get("query_type", "?")
+        bm = state_update.get("bike_model", "")
+        return f"type={qt}" + (f", bike={bm}" if bm else "")
+
+    if node_name == "retrieve":
+        docs = state_update.get("retrieved_docs", [])
+        if docs:
+            top = docs[0]
+            return f"{len(docs)} docs, top: p.{top.page_number} (dist={top.score:.2f})"
+        return "0 docs"
+
+    if node_name == "grade":
+        grade = state_update.get("retrieval_grade", "?")
+        conf = state_update.get("retrieval_confidence", "?")
+        return f"grade={grade}, confidence={conf}"
+
+    if node_name == "web_search":
+        results = state_update.get("web_results", [])
+        return f"{len(results)} results"
+
+    if node_name == "resolve_conflicts":
+        conflict = state_update.get("has_conflict", False)
+        return f"conflict={'yes' if conflict else 'no'}"
+
+    if node_name == "generate":
+        score = state_update.get("confidence_score", 0.0)
+        return f"confidence={score:.0%}"
+
+    return ""
+
+
+def _run_graph(graph, input_state: dict) -> dict:
+    """Execute graph with per-node progress output."""
+    result = {}
+    node_start = time.time()
+
+    for event in graph.stream(input_state):
+        for node_name, state_update in event.items():
+            elapsed = time.time() - node_start
+            label = NODE_LABELS.get(node_name, node_name)
+            summary = _node_summary(node_name, state_update)
+            line = f"  {label}... done ({elapsed:.1f}s)"
+            if summary:
+                line += f"  [{summary}]"
+            sys.stderr.write(line + "\n")
+            sys.stderr.flush()
+            result.update(state_update)
+            node_start = time.time()
+
+    return result
 
 
 def _confidence_label(score: float) -> str:
@@ -66,7 +123,7 @@ def chat(
             typer.echo("Goodbye!")
             break
 
-        result = graph.invoke({"query": query, "bike_model": bike})
+        result = _run_graph(graph, {"query": query, "bike_model": bike})
 
         score = result.get("confidence_score", 0.0)
         label = _confidence_label(score)
@@ -86,7 +143,7 @@ def ask(
 ):
     """Ask a single question (non-interactive)."""
     graph = build_graph()
-    result = graph.invoke({"query": question, "bike_model": bike})
+    result = _run_graph(graph, {"query": question, "bike_model": bike})
 
     score = result.get("confidence_score", 0.0)
     label = _confidence_label(score)

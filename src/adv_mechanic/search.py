@@ -1,10 +1,20 @@
 """Shared search/retrieval logic for the manual vector store."""
 
+import logging
+import os
 import re
 from dataclasses import dataclass
 
-import lancedb
-from sentence_transformers import SentenceTransformer
+# Suppress noisy model-loading warnings before importing the libraries
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+os.environ.setdefault("SAFETENSORS_FAST_GPU", "1")
+os.environ.setdefault("ST_LOAD_REPORT", "0")
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
+import lancedb  # noqa: E402
+from sentence_transformers import SentenceTransformer  # noqa: E402
 
 from adv_mechanic.config import EMBEDDING_MODEL, SIMILARITY_THRESHOLD, VECTORSTORE_DIR
 
@@ -38,7 +48,26 @@ def _get_db():
 def _get_embedding_model():
     global _embedding_model
     if _embedding_model is None:
-        _embedding_model = SentenceTransformer(EMBEDDING_MODEL)
+        # The safetensors Rust layer writes LOAD REPORT directly to the OS
+        # file descriptors (not Python sys.stdout/stderr), so we must
+        # redirect at the fd level to suppress it.
+        import sys
+
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        old_stdout_fd = os.dup(1)
+        old_stderr_fd = os.dup(2)
+        try:
+            os.dup2(devnull, 1)
+            os.dup2(devnull, 2)
+            sys.stdout.flush()
+            sys.stderr.flush()
+            _embedding_model = SentenceTransformer(EMBEDDING_MODEL)
+        finally:
+            os.dup2(old_stdout_fd, 1)
+            os.dup2(old_stderr_fd, 2)
+            os.close(devnull)
+            os.close(old_stdout_fd)
+            os.close(old_stderr_fd)
     return _embedding_model
 
 
