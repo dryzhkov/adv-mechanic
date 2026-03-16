@@ -1,11 +1,16 @@
 """Ingestion pipeline: PDF -> chunks -> LanceDB."""
 
 import hashlib
+import logging
+import os
 import re
 from pathlib import Path
 
-import lancedb
-from sentence_transformers import SentenceTransformer
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+
+import lancedb  # noqa: E402
+from sentence_transformers import SentenceTransformer  # noqa: E402
 
 from adv_mechanic.config import EMBEDDING_MODEL, MANUALS_DIR, VECTORSTORE_DIR
 from adv_mechanic.ingestion.chunker import create_chunks
