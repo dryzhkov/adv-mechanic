@@ -2,9 +2,9 @@
 
 from mcp.server.fastmcp import FastMCP
 
-from adv_mechanic.search import get_page_content, list_ingested_manuals, search_manuals
+from bike_mechanic.search import get_page_content, list_ingested_manuals, search_manuals
 
-mcp = FastMCP("adv-mechanic-rag")
+mcp = FastMCP("bike-mechanic-rag")
 
 
 @mcp.tool()
@@ -71,7 +71,7 @@ def list_manuals() -> str:
     items = list_ingested_manuals()
 
     if not items:
-        return "No manuals ingested yet. Run: adv-mechanic ingest --all"
+        return "No manuals ingested yet. Run: bike-mechanic ingest --all"
 
     parts = []
     for m in items:

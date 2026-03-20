@@ -1,7 +1,7 @@
 """RAG retrieval node."""
 
-from adv_mechanic.search import search_manuals, search_manuals_hybrid
-from adv_mechanic.state import GraphState
+from bike_mechanic.search import search_manuals, search_manuals_hybrid
+from bike_mechanic.state import GraphState
 
 
 def retrieve(state: GraphState) -> dict:

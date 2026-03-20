@@ -4,8 +4,8 @@ import re
 
 from langchain_openai import ChatOpenAI
 
-from adv_mechanic.config import LLM_MODEL, SAFETY_CRITICAL_KEYWORDS
-from adv_mechanic.state import GraphState
+from bike_mechanic.config import LLM_MODEL, SAFETY_CRITICAL_KEYWORDS
+from bike_mechanic.state import GraphState
 
 SAFETY_DISCLAIMER = (
     "!! SAFETY-CRITICAL FASTENER: This specification affects rider safety. "
@@ -33,13 +33,13 @@ WEB/COMMUNITY DATA:
 CRITICAL RULES:
 - NEVER fabricate, estimate, or guess torque values, clearances, fluid capacities, or any numeric specification
 - Every numeric spec you state MUST come from the source text above. You may match common mechanic terminology to service manual terms (e.g., "axle bolt" = "wheel spindle screw", "pinch bolt" = "triple clamp screw") but the NUMERIC VALUE must appear verbatim in a source
-- If no matching specification exists in the sources, respond: "I could not find the exact specification for [X] in the available service manual data. Please check your service manual directly or contact your dealer."
+- If no matching specification exists in the sources, respond: "I could not find the exact specification for [X] in the currently indexed manual data. This may require ingesting additional manual sections — or contact your dealer for verification."
 - Do NOT infer specifications from similar components, other model years, or general mechanical knowledge
 
 Guidelines:
 - Always cite your sources (e.g., "per service manual p.47" or "per ADVRider forum")
 - For lookup queries: lead with the specific value, then context
-- For procedural queries: clear step-by-step instructions. When a step involves a fastener, fluid fill, or adjustment, embed the relevant torque spec, clearance, or capacity INLINE in that step (e.g., "Tighten the axle nut to 110 Nm"). Pull these values from the SERVICE MANUAL DATA above — do not omit them just because the user asked "how to" rather than "what torque"
+- For procedural queries: clear step-by-step instructions. EVERY step that involves a fastener, fluid fill, gasket, sealant, or adjustment MUST include the exact spec INLINE — torque value, fluid type and capacity, clearance, or sealant part number (e.g., "Tighten the axle nut to 110 Nm (81 ft-lb)", "Fill with 1.7 L of Motorex Power Synt 4T 10W-50"). Pull these values from the SERVICE MANUAL DATA above. Do not leave any step vague — never write "tighten to spec" or "fill to the correct level" without stating the actual number. If a spec is available in the sources, it MUST appear in the step that needs it
 - Use metric units primarily, include imperial in parentheses if available from sources
 - When web/community data is available, include a brief "Community tips" section at the end listing practical insights, common mistakes, tool recommendations, or real-world experience shared by other riders. Keep each tip to one or two sentences
 - Be direct and practical -- the user is an experienced home mechanic"""
@@ -183,8 +183,8 @@ def generate(state: GraphState) -> dict:
     if not specs_verified:
         answer += (
             "\n\n!! NOTE: Some specifications in this answer could not be verified "
-            "against the retrieved source documents. Please cross-reference with "
-            "your service manual before use."
+            "against the retrieved source documents. Double-check these values "
+            "before use — contact your dealer if in doubt."
         )
 
     # Compute confidence score

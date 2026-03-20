@@ -1,7 +1,7 @@
 """Web search node for spec validation."""
 
-from adv_mechanic.config import TAVILY_API_KEY
-from adv_mechanic.state import GraphState, WebResult
+from bike_mechanic.config import TAVILY_API_KEY
+from bike_mechanic.state import GraphState, WebResult
 
 SEARCH_DOMAINS = [
     "advrider.com",

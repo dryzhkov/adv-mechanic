@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-from adv_mechanic.ingestion.pdf_parser import ExtractedContent
+from bike_mechanic.ingestion.pdf_parser import ExtractedContent
 
 
 @dataclass

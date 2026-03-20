@@ -1,6 +1,6 @@
-# adv-mechanic
+# bike-mechanic
 
-Agentic RAG system for adventure motorcycle service manuals. Combines a local PDF knowledge base (LanceDB) with real-time web search (ADVRider, Reddit, ThumperTalk) to answer torque specs, valve clearances, and procedural how-to questions.
+Agentic RAG system for motorcycle service manuals. Combines a local PDF knowledge base (LanceDB) with real-time web search (ADVRider, Reddit, ThumperTalk) to answer torque specs, valve clearances, and procedural how-to questions.
 
 Built with LangGraph, LangChain, and MCP.
 
@@ -49,8 +49,8 @@ The system:
 
 ```sh
 # Clone the repo
-git clone https://github.com/dryzhkov/adv-mechanic.git
-cd adv-mechanic
+git clone https://github.com/dryzhkov/bike-mechanic.git
+cd bike-mechanic
 
 # Install dependencies
 uv sync
@@ -80,10 +80,10 @@ The system auto-detects bike model and year from the filename. Supported naming 
 
 ```sh
 # Ingest all PDFs in data/manuals/
-uv run adv-mechanic ingest --all
+uv run bike-mechanic ingest --all
 
 # Or ingest a single file
-uv run adv-mechanic ingest data/manuals/2022_KTM_890_Shop_Manual.pdf
+uv run bike-mechanic ingest data/manuals/2022_KTM_890_Shop_Manual.pdf
 ```
 
 Ingestion is re-runnable — running it again on the same manual replaces the old chunks.
@@ -101,15 +101,15 @@ The pipeline:
 ### Interactive chat
 
 ```sh
-uv run adv-mechanic chat
-uv run adv-mechanic chat --bike "KTM 890 Adventure R"
+uv run bike-mechanic chat
+uv run bike-mechanic chat --bike "KTM 890 Adventure R"
 ```
 
 ### Single question
 
 ```sh
-uv run adv-mechanic ask "front wheel spindle torque" --bike "KTM 890 Adventure R"
-uv run adv-mechanic ask "How do I adjust the valves?" --bike "Husqvarna TE 300"
+uv run bike-mechanic ask "front wheel spindle torque" --bike "KTM 890 Adventure R"
+uv run bike-mechanic ask "How do I adjust the valves?" --bike "Husqvarna TE 300"
 ```
 
 Each answer includes a confidence score:
@@ -147,14 +147,14 @@ All settings are via environment variables in `.env`:
 ## Project structure
 
 ```
-adv-mechanic/
+bike-mechanic/
 ├── data/
 │   ├── manuals/              # Source PDFs (gitignored)
 │   └── vectorstore/          # LanceDB files (gitignored)
 ├── servers/
 │   ├── rag_server.py         # MCP server: manual search tools
 │   └── web_server.py         # MCP server: web search tools
-├── src/adv_mechanic/
+├── src/bike_mechanic/
 │   ├── main.py               # CLI entry point (Typer)
 │   ├── graph.py              # LangGraph workflow
 │   ├── state.py              # Graph state schema

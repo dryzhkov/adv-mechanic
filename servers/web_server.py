@@ -3,9 +3,9 @@
 from mcp.server.fastmcp import FastMCP
 from tavily import TavilyClient
 
-from adv_mechanic.config import MOTO_DOMAINS, TAVILY_API_KEY
+from bike_mechanic.config import MOTO_DOMAINS, TAVILY_API_KEY
 
-mcp = FastMCP("adv-mechanic-web")
+mcp = FastMCP("bike-mechanic-web")
 
 
 def _search(query: str, domains: list[str] | None = None, max_results: int = 5) -> str:

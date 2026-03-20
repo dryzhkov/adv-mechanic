@@ -2,17 +2,30 @@
 
 from langgraph.graph import END, StateGraph
 
-from adv_mechanic.nodes.conflict import resolve_conflicts
-from adv_mechanic.nodes.generate import generate
-from adv_mechanic.nodes.grade import grade
-from adv_mechanic.nodes.retrieve import retrieve
-from adv_mechanic.nodes.router import router
-from adv_mechanic.nodes.web_search import web_search
-from adv_mechanic.state import GraphState
+from bike_mechanic.nodes.conflict import resolve_conflicts
+from bike_mechanic.nodes.enrich_specs import enrich_specs
+from bike_mechanic.nodes.generate import generate
+from bike_mechanic.nodes.grade import grade
+from bike_mechanic.nodes.retrieve import retrieve
+from bike_mechanic.nodes.router import router
+from bike_mechanic.nodes.web_search import web_search
+from bike_mechanic.state import GraphState
 
 
-def _should_web_search(state: GraphState) -> str:
-    """Decide whether to do web search based on grading."""
+def _after_grade(state: GraphState) -> str:
+    """Route after grading: enrich specs for procedural, else web search decision."""
+    if state.get("query_type") == "procedural":
+        return "enrich_specs"
+    if (
+        state.get("retrieval_grade") == "sufficient"
+        and state.get("retrieval_confidence") == "high"
+    ):
+        return "generate"
+    return "web_search"
+
+
+def _after_enrich(state: GraphState) -> str:
+    """After spec enrichment, decide whether web search is still needed."""
     if (
         state.get("retrieval_grade") == "sufficient"
         and state.get("retrieval_confidence") == "high"
@@ -33,6 +46,7 @@ NODE_LABELS = {
     "router": "Classifying query",
     "retrieve": "Searching manuals",
     "grade": "Grading relevance",
+    "enrich_specs": "Fetching specs for procedure",
     "web_search": "Searching web",
     "resolve_conflicts": "Checking conflicts",
     "generate": "Generating answer",
@@ -43,7 +57,8 @@ def build_graph():
     """Build and compile the agentic RAG graph.
 
     Flow:
-        router -> retrieve -> grade --(sufficient+high)--> generate
+        router -> retrieve -> grade --(procedural)--> enrich_specs -> [web_search | generate]
+                                     --(sufficient+high)--> generate
                                      --(else)--> web_search -> resolve_conflicts -> generate
     """
     workflow = StateGraph(GraphState)
@@ -52,6 +67,7 @@ def build_graph():
     workflow.add_node("router", router)
     workflow.add_node("retrieve", retrieve)
     workflow.add_node("grade", grade)
+    workflow.add_node("enrich_specs", enrich_specs)
     workflow.add_node("web_search", web_search)
     workflow.add_node("resolve_conflicts", resolve_conflicts)
     workflow.add_node("generate", generate)
@@ -63,7 +79,12 @@ def build_graph():
 
     workflow.add_conditional_edges(
         "grade",
-        _should_web_search,
+        _after_grade,
+        {"enrich_specs": "enrich_specs", "web_search": "web_search", "generate": "generate"},
+    )
+    workflow.add_conditional_edges(
+        "enrich_specs",
+        _after_enrich,
         {"web_search": "web_search", "generate": "generate"},
     )
     workflow.add_conditional_edges(

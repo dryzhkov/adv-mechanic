@@ -2,7 +2,7 @@
 
 ## Project
 
-adv-mechanic — Agentic RAG system for adventure motorcycle service manuals.
+bike-mechanic — Agentic RAG system for motorcycle service manuals.
 Combines a local PDF knowledge base (LanceDB) with real-time web search
 (ADVRider, Reddit, ThumperTalk) to answer torque specs, valve clearances,
 and procedural how-to questions.
@@ -31,16 +31,16 @@ cp .env.example .env  # then fill in API keys
 ### Ingest manuals
 
 ```sh
-uv run adv-mechanic ingest --all       # all PDFs in data/manuals/
-uv run adv-mechanic ingest path/to.pdf  # single PDF
+uv run bike-mechanic ingest --all       # all PDFs in data/manuals/
+uv run bike-mechanic ingest path/to.pdf  # single PDF
 ```
 
 ### Chat
 
 ```sh
-uv run adv-mechanic chat
-uv run adv-mechanic chat --bike "KTM 890 Adventure R"
-uv run adv-mechanic ask "cam chain tensioner torque" --bike "KTM 890 Adventure R"
+uv run bike-mechanic chat
+uv run bike-mechanic chat --bike "KTM 890 Adventure R"
+uv run bike-mechanic ask "cam chain tensioner torque" --bike "KTM 890 Adventure R"
 ```
 
 ### MCP servers
@@ -65,14 +65,14 @@ uv run ruff check .
 ## Project Structure
 
 ```
-adv-mechanic/
+bike-mechanic/
 ├── data/
 │   ├── manuals/              # source PDFs (gitignored)
 │   └── vectorstore/          # LanceDB files (gitignored)
 ├── servers/
 │   ├── rag_server.py         # MCP server: manual search tools
 │   └── web_server.py         # MCP server: web search tools
-├── src/adv_mechanic/
+├── src/bike_mechanic/
 │   ├── main.py               # CLI entry point (typer)
 │   ├── graph.py              # LangGraph workflow definition
 │   ├── state.py              # Graph state schema
