@@ -1,4 +1,4 @@
-"""CLI entry point for adv-mechanic."""
+"""CLI entry point for bike-mechanic."""
 
 import sys
 import time
@@ -6,16 +6,18 @@ from pathlib import Path
 
 import typer
 
-from adv_mechanic.config import MANUALS_DIR
-from adv_mechanic.graph import NODE_LABELS, build_graph
-from adv_mechanic.ingestion.pipeline import ingest_all_manuals, ingest_manual
-from adv_mechanic.search import list_ingested_manuals
+from bike_mechanic.config import MANUALS_DIR
+from bike_mechanic.graph import NODE_LABELS, build_graph
+from bike_mechanic.ingestion.pipeline import ingest_all_manuals, ingest_manual
+from bike_mechanic.search import list_ingested_manuals
 
-app = typer.Typer(help="ADV Mechanic - Agentic RAG for motorcycle service manuals")
+app = typer.Typer(help="Bike Mechanic - Agentic RAG for motorcycle service manuals")
 
 
-def _node_summary(node_name: str, state_update: dict) -> str:
+def _node_summary(node_name: str, state_update: dict | None) -> str:
     """Return a short summary of what a node produced."""
+    if not state_update:
+        return ""
     if node_name == "router":
         qt = state_update.get("query_type", "?")
         bm = state_update.get("bike_model", "")
@@ -63,7 +65,8 @@ def _run_graph(graph, input_state: dict) -> dict:
                 line += f"  [{summary}]"
             sys.stderr.write(line + "\n")
             sys.stderr.flush()
-            result.update(state_update)
+            if state_update:
+                result.update(state_update)
             node_start = time.time()
 
     return result
@@ -104,7 +107,7 @@ def chat(
     """Start an interactive chat session."""
     graph = build_graph()
 
-    typer.echo("ADV Mechanic - Motorcycle Service Manual Q&A")
+    typer.echo("Bike Mechanic - Motorcycle Service Manual Q&A")
     typer.echo("Type your question, or 'quit' to exit.\n")
 
     if bike:
@@ -161,7 +164,7 @@ def manuals():
     """List all ingested manuals."""
     items = list_ingested_manuals()
     if not items:
-        typer.echo("No manuals ingested yet. Run: adv-mechanic ingest --all")
+        typer.echo("No manuals ingested yet. Run: bike-mechanic ingest --all")
         return
 
     for m in items:

@@ -4,8 +4,8 @@ import re
 
 from langchain_openai import ChatOpenAI
 
-from adv_mechanic.config import LLM_MODEL
-from adv_mechanic.state import GraphState
+from bike_mechanic.config import LLM_MODEL
+from bike_mechanic.state import GraphState
 
 # Pattern to detect numeric specs in retrieved docs
 _SPEC_PATTERN = re.compile(

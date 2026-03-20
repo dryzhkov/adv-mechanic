@@ -12,9 +12,9 @@ logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
 import lancedb  # noqa: E402
 from sentence_transformers import SentenceTransformer  # noqa: E402
 
-from adv_mechanic.config import EMBEDDING_MODEL, MANUALS_DIR, VECTORSTORE_DIR
-from adv_mechanic.ingestion.chunker import create_chunks
-from adv_mechanic.ingestion.pdf_parser import parse_pdf
+from bike_mechanic.config import EMBEDDING_MODEL, MANUALS_DIR, VECTORSTORE_DIR
+from bike_mechanic.ingestion.chunker import create_chunks
+from bike_mechanic.ingestion.pdf_parser import parse_pdf
 
 # Filename-to-model mapping
 BIKE_MODEL_PATTERNS = {

@@ -2,9 +2,9 @@
 
 from langchain_openai import ChatOpenAI
 
-from adv_mechanic.config import LLM_MODEL
-from adv_mechanic.search import resolve_bike_model
-from adv_mechanic.state import GraphState
+from bike_mechanic.config import LLM_MODEL
+from bike_mechanic.search import resolve_bike_model
+from bike_mechanic.state import GraphState
 
 ROUTER_PROMPT = """Classify this motorcycle service question and extract the bike model.
 

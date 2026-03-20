@@ -2,8 +2,8 @@
 
 from langchain_openai import ChatOpenAI
 
-from adv_mechanic.config import LLM_MODEL
-from adv_mechanic.state import GraphState
+from bike_mechanic.config import LLM_MODEL
+from bike_mechanic.state import GraphState
 
 CONFLICT_PROMPT = """Compare the service manual data with community/web sources for this motorcycle question.
 

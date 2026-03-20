@@ -16,7 +16,7 @@ logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
 import lancedb  # noqa: E402
 from sentence_transformers import SentenceTransformer  # noqa: E402
 
-from adv_mechanic.config import EMBEDDING_MODEL, SIMILARITY_THRESHOLD, VECTORSTORE_DIR
+from bike_mechanic.config import EMBEDDING_MODEL, SIMILARITY_THRESHOLD, VECTORSTORE_DIR
 
 # Module-level caches
 _db = None

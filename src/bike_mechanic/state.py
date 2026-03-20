@@ -2,7 +2,7 @@
 
 from typing import TypedDict
 
-from adv_mechanic.search import SearchResult
+from bike_mechanic.search import SearchResult
 
 
 class WebResult(TypedDict):
