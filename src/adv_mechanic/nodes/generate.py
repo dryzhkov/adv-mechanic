@@ -39,8 +39,9 @@ CRITICAL RULES:
 Guidelines:
 - Always cite your sources (e.g., "per service manual p.47" or "per ADVRider forum")
 - For lookup queries: lead with the specific value, then context
-- For procedural queries: clear step-by-step instructions
+- For procedural queries: clear step-by-step instructions. When a step involves a fastener, fluid fill, or adjustment, embed the relevant torque spec, clearance, or capacity INLINE in that step (e.g., "Tighten the axle nut to 110 Nm"). Pull these values from the SERVICE MANUAL DATA above — do not omit them just because the user asked "how to" rather than "what torque"
 - Use metric units primarily, include imperial in parentheses if available from sources
+- When web/community data is available, include a brief "Community tips" section at the end listing practical insights, common mistakes, tool recommendations, or real-world experience shared by other riders. Keep each tip to one or two sentences
 - Be direct and practical -- the user is an experienced home mechanic"""
 
 # Pattern to extract numeric specs from generated answers
